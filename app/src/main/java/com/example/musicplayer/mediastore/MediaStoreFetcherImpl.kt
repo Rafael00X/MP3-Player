@@ -8,7 +8,7 @@ import com.example.musicplayer.song.Song
 import java.io.File
 import javax.inject.Inject
 
-class MediaStoreFetcherImpl @Inject constructor(private val app : Application) : MediaStoreFetcher {
+class MediaStoreFetcherImpl(private val app: Application) : MediaStoreFetcher {
 
     override fun getAllSongs(): List<Song> {
         val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI

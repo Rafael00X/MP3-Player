@@ -15,7 +15,7 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideMediaStoreFetcher() : MediaStoreFetcher {
-        return MediaStoreFetcherImpl(app = Application())
+    fun provideMediaStoreFetcher(application: Application) : MediaStoreFetcher {
+        return MediaStoreFetcherImpl(application)
     }
 }
