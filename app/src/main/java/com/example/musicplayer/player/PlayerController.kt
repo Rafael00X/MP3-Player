@@ -24,19 +24,8 @@ class PlayerController @Inject constructor(
 
     init {
         player.addListener(this)
-        player.repeatMode = Player.REPEAT_MODE_ALL
         player.prepare()
         progressJob = Job()
-    }
-
-    fun addMediaItem(mediaItem: MediaItem) {
-        player.setMediaItem(mediaItem)
-        player.prepare()
-    }
-
-    fun addMediaItemList(mediaItemList: List<MediaItem>) {
-        player.setMediaItems(mediaItemList)
-        player.prepare()
     }
 
     fun onPlayerEvent(playerEvent: PlayerEvent) {
@@ -50,12 +39,11 @@ class PlayerController @Inject constructor(
             PlayerEvent.Next -> player.seekToNextMediaItem()
             PlayerEvent.Previous -> player.seekToPreviousMediaItem()
             PlayerEvent.Stop -> stop()
-            PlayerEvent.Repeat -> {
-                if (player.repeatMode == Player.REPEAT_MODE_ALL) {
-                    player.repeatMode = Player.REPEAT_MODE_ONE
-                } else {
-                    player.repeatMode = Player.REPEAT_MODE_ALL
-                }
+            is PlayerEvent.Repeat -> {
+                val repeatModes =
+                    arrayOf(Player.REPEAT_MODE_OFF, Player.REPEAT_MODE_ONE, Player.REPEAT_MODE_ALL)
+                if (playerEvent.repeatMode in repeatModes)
+                    player.repeatMode = playerEvent.repeatMode
             }
 
             is PlayerEvent.UpdateProgress -> player.seekTo((player.duration * playerEvent.newProgress).toLong())
@@ -138,7 +126,7 @@ sealed class PlayerEvent {
     object Next : PlayerEvent()
     object Previous : PlayerEvent()
     object Stop : PlayerEvent()
-    object Repeat : PlayerEvent()
+    data class Repeat(val repeatMode: Int) : PlayerEvent()
     data class UpdateProgress(val newProgress: Float) : PlayerEvent()
     data class LoadMediaItems(val mediaItems: List<MediaItem>, val index: Int = 0) : PlayerEvent()
 }
