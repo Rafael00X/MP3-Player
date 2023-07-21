@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.musicplayer.ui.song.SongScreen
 import com.example.musicplayer.ui.theme.MusicPlayerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,7 +36,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Hello World")
+                    SongScreen()
                 }
             }
         }
