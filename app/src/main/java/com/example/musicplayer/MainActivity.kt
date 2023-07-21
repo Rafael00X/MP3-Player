@@ -1,6 +1,7 @@
 package com.example.musicplayer
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -9,20 +10,21 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.musicplayer.service.PlayerService
 import com.example.musicplayer.ui.song.SongScreen
 import com.example.musicplayer.ui.theme.MusicPlayerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    var isServiceRunning = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        startService()
 
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU)
             checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, STORAGE_PER)
@@ -66,20 +68,18 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    override fun onDestroy() {
+        super.onDestroy()
+        stopService(Intent(this, PlayerService::class.java))
+        isServiceRunning = false
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MusicPlayerTheme {
-        Greeting("Android")
+    private fun startService() {
+        if (!isServiceRunning) {
+            val intent = Intent(this, PlayerService::class.java)
+            startForegroundService(intent)
+            isServiceRunning = true
+        }
     }
 }
