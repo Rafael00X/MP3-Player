@@ -52,7 +52,6 @@ dependencies {
 
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.0')
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
     implementation 'androidx.activity:activity-compose:1.5.1'
     implementation platform('androidx.compose:compose-bom:2022.10.00')
     implementation 'androidx.compose.ui:ui'
@@ -71,4 +70,10 @@ dependencies {
     def dagger_hilt_version = "2.44"
     implementation "com.google.dagger:hilt-android:$dagger_hilt_version"
     kapt "com.google.dagger:hilt-compiler:$dagger_hilt_version"
+
+    // Lifecycle
+    def lifecycle_version = "2.6.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
 }
