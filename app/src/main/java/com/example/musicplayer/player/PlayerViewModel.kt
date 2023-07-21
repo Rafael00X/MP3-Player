@@ -26,8 +26,6 @@ class PlayerViewModel @Inject constructor(
     var progress by savedStateHandle.saveable { mutableStateOf(0f) }
     var progressString by savedStateHandle.saveable { mutableStateOf("00:00") }
     var isPlaying by savedStateHandle.saveable { mutableStateOf(false) }
-    var songs by savedStateHandle.saveable { mutableStateOf(emptyList<Song>()) }
-    var songIndex by savedStateHandle.saveable { mutableStateOf(-1) }
 
     private val _uiState = MutableStateFlow<UIState>(UIState.Initial)
     val uiState = _uiState.asStateFlow()
@@ -66,8 +64,6 @@ class PlayerViewModel @Inject constructor(
 
     fun setSongsList(songs: List<Song>, index: Int) {
         playerController.onPlayerEvent(PlayerEvent.Pause)
-        this.songs = songs
-        songIndex = index
         val mediaItems = songs.map { MediaItem.Builder().setUri(it.path).build() }
         println("From PlayerViewModel")
         println(songs[index])

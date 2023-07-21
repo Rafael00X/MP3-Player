@@ -14,33 +14,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.musicplayer.player.PlayerViewModel
 import com.example.musicplayer.song.Song
 import com.example.musicplayer.song.SongViewModel
+import com.example.musicplayer.ui.player.PlayerScreen
 
 @Composable
 fun SongScreen(
-    viewModel: SongViewModel = viewModel()
+    songViewModel: SongViewModel = viewModel(),
+    playerViewModel: PlayerViewModel = viewModel()
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by songViewModel.state.collectAsState()
     val songs: List<Song> = state.songs
 
     println("Inside SongScreen")
 
     val handleClick = { song: Song, index: Int ->
-//        println("From SongScreen handleClick")
-//        println(song)
-//        println(index)
-//        playerViewModel.setSongsList(songs, index)
+        println("From SongScreen handleClick")
+        println(song)
+        println(index)
+        playerViewModel.setSongsList(songs, index)
         println(song.toString())
     }
 
     Column {
+        PlayerScreen()
         Spacer(modifier = Modifier.height(10.dp))
         Text("SongScreen")
         Spacer(modifier = Modifier.height(10.dp))
         Button(onClick = {
             println("Button clicked")
-            viewModel.getAllSongs()
+            songViewModel.getAllSongs()
         }) {
             Text("Fetch Songs")
         }
