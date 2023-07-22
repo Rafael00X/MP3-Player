@@ -23,7 +23,7 @@ class PlayerViewModel @Inject constructor(
 ) : ViewModel() {
 
     var duration by savedStateHandle.saveable { mutableStateOf(0L) }
-    var progress by savedStateHandle.saveable { mutableStateOf(0f) }
+    var progressPercentage by savedStateHandle.saveable { mutableStateOf(0f) }
     var progressString by savedStateHandle.saveable { mutableStateOf("00:00") }
     var isPlaying by savedStateHandle.saveable { mutableStateOf(false) }
 
@@ -33,22 +33,22 @@ class PlayerViewModel @Inject constructor(
     init {
         viewModelScope.launch {
 
-            playerController.playerState.collect { mediaState ->
-                when (mediaState) {
-                    is PlayerState.Buffering -> calculateProgressValues(mediaState.progress)
+            playerController.playerState.collect { playerState ->
+                when (playerState) {
                     PlayerState.Initial -> _uiState.value = UIState.Initial
+                    is PlayerState.Buffering -> calculateProgressValues(playerState.progress)
                     is PlayerState.Playing -> {
                         isPlaying = true
-                        calculateProgressValues(mediaState.progress)
+                        calculateProgressValues(playerState.progress)
                     }
 
                     is PlayerState.Paused -> {
                         isPlaying = false
-                        calculateProgressValues(mediaState.progress)
+                        calculateProgressValues(playerState.progress)
                     }
 
                     is PlayerState.Ready -> {
-                        duration = mediaState.duration
+                        duration = playerState.duration
                         _uiState.value = UIState.Ready
                     }
                 }
@@ -62,28 +62,23 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
-    fun setSongsList(songs: List<Song>, index: Int) {
-        playerController.onPlayerEvent(PlayerEvent.Pause)
-        val mediaItems = songs.map { MediaItem.Builder().setUri(it.path).build() }
-        println("From PlayerViewModel")
-        println(songs[index])
-        println(index)
-        playerController.onPlayerEvent(PlayerEvent.LoadMediaItems(mediaItems, index))
-    }
-
     fun onUIEvent(uiEvent: UIEvent) = viewModelScope.launch {
         when (uiEvent) {
             UIEvent.Next -> playerController.onPlayerEvent(PlayerEvent.Next)
             UIEvent.Previous -> playerController.onPlayerEvent(PlayerEvent.Previous)
             UIEvent.PlayPause -> playerController.onPlayerEvent(PlayerEvent.PlayPause)
             is UIEvent.UpdateProgress -> {
-                progress = uiEvent.newProgress
-                playerController.onPlayerEvent(
-                    PlayerEvent.UpdateProgress(
-                        uiEvent.newProgress
-                    )
-                )
+                progressPercentage = uiEvent.newProgress
+                playerController.onPlayerEvent(PlayerEvent.UpdateProgress(uiEvent.newProgress))
             }
+        }
+    }
+
+    fun setSongsList(songs: List<Song>, index: Int) {
+        viewModelScope.launch {
+            playerController.onPlayerEvent(PlayerEvent.Pause)
+            val mediaItems = songs.map { MediaItem.Builder().setUri(it.path).build() }
+            playerController.onPlayerEvent(PlayerEvent.LoadMediaItems(mediaItems, index))
         }
     }
 
@@ -95,20 +90,20 @@ class PlayerViewModel @Inject constructor(
     }
 
     private fun calculateProgressValues(currentProgress: Long) {
-        progress = if (currentProgress > 0) (currentProgress.toFloat() / duration) else 0f
+        progressPercentage = if (currentProgress > 0) (currentProgress.toFloat() / duration) else 0f
         progressString = formatDuration(currentProgress)
     }
 
-}
+    sealed class UIEvent {
+        object PlayPause : UIEvent()
+        object Next : UIEvent()
+        object Previous : UIEvent()
+        data class UpdateProgress(val newProgress: Float) : UIEvent()
+    }
 
-sealed class UIEvent {
-    object PlayPause : UIEvent()
-    object Next : UIEvent()
-    object Previous : UIEvent()
-    data class UpdateProgress(val newProgress: Float) : UIEvent()
-}
+    sealed class UIState {
+        object Initial : UIState()
+        object Ready : UIState()
+    }
 
-sealed class UIState {
-    object Initial : UIState()
-    object Ready : UIState()
 }
