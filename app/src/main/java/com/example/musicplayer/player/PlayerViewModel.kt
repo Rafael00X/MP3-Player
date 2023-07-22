@@ -94,16 +94,16 @@ class PlayerViewModel @Inject constructor(
         progressString = formatDuration(currentProgress)
     }
 
-    sealed class UIEvent {
-        object PlayPause : UIEvent()
-        object Next : UIEvent()
-        object Previous : UIEvent()
-        data class UpdateProgress(val newProgress: Float) : UIEvent()
-    }
+}
 
-    sealed class UIState {
-        object Initial : UIState()
-        object Ready : UIState()
-    }
+sealed class UIEvent {
+    object PlayPause : UIEvent()
+    object Next : UIEvent()
+    object Previous : UIEvent()
+    data class UpdateProgress(val newProgress: Float) : UIEvent()
+}
 
+sealed class UIState {
+    object Initial : UIState()
+    object Ready : UIState()
 }
