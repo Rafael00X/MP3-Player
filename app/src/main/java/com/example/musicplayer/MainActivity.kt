@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.musicplayer.service.PlayerService
-import com.example.musicplayer.ui.song.SongScreen
+import com.example.musicplayer.ui.MainScreen
 import com.example.musicplayer.ui.theme.MusicPlayerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SongScreen()
+                    MainScreen()
                 }
             }
         }
